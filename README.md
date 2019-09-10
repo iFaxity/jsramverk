@@ -1,3 +1,7 @@
+## Länk till github repo
+
+https://github.com/ifaxity/jsramverk
+
 ## Installera moduler
 
 För att installera modulerna kör:

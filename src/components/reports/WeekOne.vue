@@ -1,5 +1,5 @@
 <template lang="pug">
-article.week-1
+article.week-one
   h1 Rapport vecka 1
   include:markdown-it ../../../README.md
 </template>

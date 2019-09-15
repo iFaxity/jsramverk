@@ -6,6 +6,6 @@ article.not-found
 
 <script>
 export default {
-  name: "NotFound",
+  name: 'NotFound',
 };
 </script>

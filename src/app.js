@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Layout from './components/Layout.vue';
+import Layout from './routes/Layout.vue';
 import routes from './routes';
 
 const Router = new VueRouter({

@@ -5,6 +5,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "preserve": "rm -rf dist",
     "serve": "parcel src/index.html --open",
     "prebuild": "rm -rf dist",
     "build": "parcel build src/index.html --public-url ./"

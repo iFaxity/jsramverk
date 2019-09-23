@@ -1,8 +1,9 @@
 <template lang="pug">
 article
   h1 Registrera konto
+  p(v-if="error") Felmeddelande: {{ error }}
 
-  form
+  form(@submit.prevent="register")
     .fields
       app-textfield(v-model="name", label="Namn", name="name", required)
       app-textfield(v-model="email", type="email", label="Email", name="email", required)
@@ -23,7 +24,7 @@ article
 
     .fields
       label.checkbox
-        input(type="checkbox")
+        input(type="checkbox", required)
         | Jag godkänner behandlingen av mina personuppgifter enligt GDPR
       button.register.solid(type="submit") Registrera
 </template>
@@ -54,8 +55,8 @@ h1 {
 </style>
 
 <script>
-import AppTextfield from '../components/TextField.Vue';
-import AppDatepicker from '../components/DatePicker.vue';
+import AppTextfield from '~/components/Textfield.vue';
+import AppDatepicker from '~/components/Datepicker.vue';
 const regexEscape = str => str.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
 const SPECIAL_CHARS = '&@!?%#-_';
 const SPECIAL_ESC = regexEscape(SPECIAL_CHARS);
@@ -64,12 +65,29 @@ export default {
   name: 'AppRegister',
   components: { AppTextfield, AppDatepicker },
   data: () => ({
-    name: '',
     email: '',
-    birthdate: new Date(),
     password: '',
+    name: '',
+    birthdate: new Date(),
     specialChars: SPECIAL_CHARS,
     pattern: `^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[${SPECIAL_ESC}])[A-Za-z0-9${SPECIAL_ESC}]{8,}$`,
+    error: '',
   }),
+
+  methods: {
+    async register() {
+      try {
+        await this.$store.dispatch('register', {
+          email: this.email,
+          password: this.password,
+          name: this.name,
+          birthdate: this.birthdate,
+        });
+        this.$router.push({ name: 'home' });
+      } catch (ex) {
+        this.error = ex.message;
+      }
+    }
+  }
 };
 </script>

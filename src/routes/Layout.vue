@@ -2,14 +2,14 @@
 #app
   header
     nav.left
-      router-link(to="/") Hem
-      //router-link(to="/reports/week/1") Rapport vecka 1
-      //router-link(to="/reports/week/2") Rapport vecka 2
-      app-dropdown(title="Reports")
-        router-link(to="/reports/week/1") Vecka 1
-        router-link(to="/reports/week/2") Vecka 2
-    nav.right
-      router-link.register(to="/register") Register
+      router-link(:to="{name: 'home'}") Hem
+      router-link(:to="{name: 'reports'}") Rapporter
+
+    nav.right(v-if="loggedIn")
+      router-link(:to="{name: 'logout'}") Logout
+    nav.right(v-else)
+      router-link(:to="{name: 'login'}") Login
+      router-link(:to="{name: 'register'}") Register
   main
     router-view
   footer
@@ -88,6 +88,18 @@ import AppDropdown from '../components/Dropdown.vue';
 
 export default {
   name: 'Layout',
-  components: { AppDropdown },
+  data: () => ({
+    loggedIn: false,
+  }),
+
+  created() {
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type == 'login') {
+        this.loggedIn = true;
+      } else if (mutation.type == 'logout') {
+        this.loggedIn = false;
+      }
+    });
+  },
 };
 </script>

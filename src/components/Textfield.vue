@@ -85,6 +85,16 @@ input {
   &:required + label::after {
     content: '*';
   }
+
+  // Remove spinbox on number fields (works for Firefox and Chrome)
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  &[type=number] {
+    -moz-appearance:textfield;
+  }
 }
 </style>
 

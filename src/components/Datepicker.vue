@@ -10,7 +10,7 @@
       .header
         span.prev(@click="prev")
         span.title {{ title }}
-        span.next(@click="next")
+        span.next(:class="{ disabled: !hasNext }", @click="next")
       .body
         .weekdays
           span.weekday(v-for="day in weekdays") {{ day }}
@@ -127,6 +127,7 @@ $media-tablet: 768px;
   }
 
   .header {
+    position: relative;
     height: 1em;
     display: flex;
     color: #fff;
@@ -144,6 +145,7 @@ $media-tablet: 768px;
     .next {
       cursor: pointer;
       padding: 0.3em 0.5em 0.5em;
+      position: absolute;
 
       &::before {
         content: '';
@@ -153,13 +155,29 @@ $media-tablet: 768px;
         padding: 0.25em;
         vertical-align: middle;
       }
+
+      &.disabled {
+        pointer-events: none;
+
+        &::before {
+          content: none;
+        }
+      }
     }
 
-    .prev::before {
-      transform: rotate(135deg);
+    .prev {
+      left: 0.5em;
+
+      &::before {
+        transform: rotate(135deg);
+      }
     }
-    .next::before {
-      transform: rotate(-45deg);
+    .next {
+      right: 0.5em;
+
+      &::before {
+        transform: rotate(-45deg);
+      }
     }
   }
 
@@ -210,7 +228,7 @@ $media-tablet: 768px;
   }
 
   .footer {
-    padding-bottom: 0.5em;
+    padding: 0.5em 0;
     float: right;
 
     button {
@@ -221,7 +239,7 @@ $media-tablet: 768px;
 </style>
 
 <script>
-import TextField from './TextField';
+import AppTextfield from './Textfield';
 
 const MONTH_NAMES = [
   'JANUARI',
@@ -249,7 +267,7 @@ function formatDate(year, month, day) {
 
 export default {
   name: 'AppDatepicker',
-  components: { TextField },
+  components: { AppTextfield },
   model: {
     event: 'change',
     prop: 'value'
@@ -283,7 +301,12 @@ export default {
       const year = this.currentYear;
       const month = this.currentMonth + 1;
       const date = new Date(year, month, 0);
-      const days = date.getDate();
+      let days = date.getDate();
+
+      if (!this.hasNext) {
+        const now = new Date();
+        days = now.getDate();
+      }
 
       return [...Array(days).keys()].map(day => [ day + 1, formatDate(year, month, day + 1) ]);
     },
@@ -300,10 +323,20 @@ export default {
     formatValue() {
       return formatDate(this.value.getFullYear(), this.value.getMonth(), this.value.getDate());
     },
+
+    hasNext() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+
+      return year > this.currentYear || (year == this.currentYear && month > this.currentMonth);
+    },
   },
 
   methods: {
     next() {
+      if (this.currentYear > this.maxYear) return;
+
       if (this.currentMonth >= 11) {
         this.currentMonth = 0;
         this.currentYear++;
@@ -314,7 +347,7 @@ export default {
     prev() {
       if (!this.currentMonth) {
         // Dont allow dates lower than 1 January 1970.
-        if (this.currentYear > 1970) return;
+        if (this.currentYear < this.minYear) return;
 
         this.currentMonth = 11;
         this.currentYear--;
@@ -346,6 +379,7 @@ export default {
     hide(e) {
       if (!e || !this.$el.contains(e.target)) {
         this.open = false;
+        debugger;
 
         document.body.removeEventListener('click', this.hide);
         document.body.removeEventListener('touchstart', this.hide);

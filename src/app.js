@@ -2,8 +2,11 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Layout from './routes/Layout.vue';
 import routes from './routes';
+import store from './store';
 
-const Router = new VueRouter({
+Vue.use(VueRouter);
+
+const router = new VueRouter({
   base: '/',
   mode: 'history',
   routes,
@@ -11,11 +14,36 @@ const Router = new VueRouter({
   linkExactActiveClass: 'active',
 });
 
-Vue.use(VueRouter);
+// Middlewares
+router.beforeEach((to, from, next) => {
+  let title = to.meta && to.meta.title;
+
+  if (title) {
+    title = typeof title == 'function' ? title(to) : title;
+    document.title = `chnc16 | ${title}`;
+  }
+
+  next();
+});
+router.beforeEach((to, from, next) => {
+  const { meta } = to;
+
+  if (meta && meta.auth && !store.getters.loggedIn) {
+    next({
+      name: 'login',
+      query: {
+        redirect: to.fullPath != '/' ? to.fullPath : undefined,
+      }
+    });
+  } else {
+    next();
+  }
+});
 
 // Create vue instance
 new Vue({
   el: '#app',
-  router: Router,
+  router,
+  store,
   render: h => h(Layout),
 });

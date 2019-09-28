@@ -1,0 +1,6 @@
+build:
+  environment:
+    node: v12.10.0
+      selenium: true
+      google_chrome:
+        use_latest: true

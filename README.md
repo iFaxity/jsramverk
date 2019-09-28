@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/iFaxity/jsramverk.svg?branch=master)](https://travis-ci.org/iFaxity/jsramverk)
+[![Build Status](https://scrutinizer-ci.com/g/iFaxity/jsramverk/badges/build.png?b=master)](https://scrutinizer-ci.com/g/iFaxity/jsramverk/build-status/master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/iFaxity/jsramverk/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/iFaxity/jsramverk/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/iFaxity/jsramverk/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/iFaxity/jsramverk/?branch=master)
 

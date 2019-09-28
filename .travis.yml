@@ -4,11 +4,11 @@ node_js:
 addons:
   chrome: stable
 
+cache:
+  yarn: true
 env:
   global:
     - NODE_ENV='test'
-cache:
-  yarn: true
 
 after_install:
   - yarn global add forever

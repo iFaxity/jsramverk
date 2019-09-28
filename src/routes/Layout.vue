@@ -9,7 +9,7 @@
       router-link(:to="{name: 'logout'}") Logout
     nav.right(v-else)
       router-link(:to="{name: 'login'}") Login
-      router-link(:to="{name: 'register'}") Register
+      router-link(:to="{name: 'register'}") Registrera
   main
     router-view
   footer

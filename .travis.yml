@@ -10,7 +10,7 @@ env:
   global:
     - NODE_ENV='test'
 
-after_install:
+before_install:
   - yarn global add forever
 
 before_script:

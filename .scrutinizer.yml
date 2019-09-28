@@ -8,6 +8,6 @@ build:
   tests:
     before:
       - command: yarn serve
-      background: true
+        background: true
     override:
       - command: yarn test

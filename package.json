@@ -13,7 +13,8 @@
     "prebuild": "rm -rf dist",
     "build": "parcel build src/index.html --public-url /",
     "predeploy": "npm run build",
-    "deploy": "rsync -av dist/* christian@faxity.se:/var/www/jsramverk/"
+    "deploy": "rsync -av dist/* christian@faxity.se:/var/www/jsramverk/",
+    "test": "mocha test/*.js"
   },
   "browserslist": [
     ">1%",
@@ -27,10 +28,13 @@
   },
   "devDependencies": {
     "@vue/component-compiler-utils": "^3.0.0",
+    "babel-plugin-istanbul": "^5.2.0",
+    "mocha": "^6.2.0",
     "normalize.css": "^8.0.1",
     "parcel-bundler": "^1.12.3",
     "pug": "^2.0.4",
     "sass": "^1.22.10",
+    "selenium-webdriver": "3.6.0",
     "vue-template-compiler": "^2.6.10"
   }
 }

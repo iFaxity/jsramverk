@@ -1,6 +1,17 @@
 build:
   environment:
     node: v12.10.0
-      selenium: true
-      google_chrome:
-        use_latest: true
+    selenium: true
+    variables:
+      NODE_ENV: 'test'
+
+  dependencies:
+    after: yarn global add forever
+
+  tests:
+    before:
+      - forever start -c 'yarn serve' ./
+    override:
+      - command: yarn test
+    after:
+      - forever stopall

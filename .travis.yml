@@ -1,8 +1,6 @@
 language: node_js
-
 node_js:
   - 12
-
 addons:
   chrome: stable
 
@@ -10,16 +8,14 @@ env:
   global:
     - NODE_ENV='test'
 
-before_install:
+after_install:
   - yarn global add forever
 
 before_script:
   - wget https://chromedriver.storage.googleapis.com/77.0.3865.40/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip -d /home/travis/build/iFaxity/jsramverk
-
 script:
   - forever start -c 'yarn serve' ./
   - yarn run test
-
 after_script:
   - forever stopall

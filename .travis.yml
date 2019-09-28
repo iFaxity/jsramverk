@@ -6,3 +6,7 @@ node_js:
 env:
   global:
     - NODE_ENV='test'
+
+before_script:
+  - wget https://chromedriver.storage.googleapis.com/78.0.3904.11/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip -d /home/travis/build/iFaxity/jsramverk

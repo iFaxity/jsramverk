@@ -5,14 +5,9 @@ build:
     variables:
       NODE_ENV: 'test'
 
-  dependencies:
-    after:
-      - yarn global add forever
-
   tests:
     before:
-      - forever start -c 'yarn serve' ./
+      - command: yarn serve
+      background: true
     override:
       - command: yarn test
-    after:
-      - forever stopall

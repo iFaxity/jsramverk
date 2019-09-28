@@ -6,7 +6,8 @@ build:
       NODE_ENV: 'test'
 
   dependencies:
-    after: yarn global add forever
+    after:
+      - yarn global add forever
 
   tests:
     before:

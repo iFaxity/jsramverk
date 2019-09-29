@@ -1,6 +1,6 @@
 const assert = require('assert').strict;
 const test = require('selenium-webdriver/testing');
-const { Builder, By } = require('selenium-webdriver');
+const { Builder, By, until } = require('selenium-webdriver');
 const Chrome = require('selenium-webdriver/chrome');
 
 const URL = 'http://localhost:1234';
@@ -10,7 +10,7 @@ let browser;
 
 // Clicks link has content
 async function clickLink(target) {
-  const $el = await browser.findElement(By.linkText(target));
+  const $el = await browser.wait(until.elementLocated(By.linkText(target)), 5000);
   return $el.click();
 }
 
@@ -22,7 +22,7 @@ async function assertUrl(target) {
 
 // Asserts if h1 has content
 async function assertH1(target) {
-  const $el = await browser.findElement(By.css('h1'));
+  const $el = await browser.wait(until.elementLocated(By.css('h1')), 5000);
   const text = await $el.getText();
   assert.equal(text, target);
 }
@@ -33,7 +33,8 @@ async function assertTitle(target) {
   assert.equal(title, `chnc16 | ${target}`);
 }
 
-// Test case
+const wait = (ms = 0) => new Promise(resolve => setTimeout(() => resolve(), ms));
+
 test.describe('Page', () => {
   // Hooks
   test.beforeEach(async function () {
@@ -47,23 +48,34 @@ test.describe('Page', () => {
   });
   test.afterEach(() => browser.quit());
 
-  test.it('Test /', async () => {
-    await assertTitle('Hem')
-    await assertH1('Välkomstmeddelande');
-    await assertUrl('/');
-  });
-
-  test.it('Test go to /reports', async () => {
-    await clickLink('Rapporter');
-    await assertTitle('Rapporter');
-    await assertH1('Rapporter');
-    await assertUrl('/reports');
-  });
-
-  test.it('Test go to /register', async () => {
+  // Test cases
+  test.it('Test go to register page', async () => {
     await clickLink('Registrera');
-    await assertTitle('Registrera');
+    await wait(500);
     await assertH1('Registrera konto');
+    await assertTitle('Registrera');
     await assertUrl('/register');
+  });
+
+  test.it('Test go to login page', async () => {
+    await clickLink('Login');
+    await wait(500);
+    await assertH1('Login');
+    await assertTitle('Login');
+    await assertUrl('/login');
+  });
+
+  test.it('Test go to first report', async () => {
+    await clickLink('Rapporter');
+    await assertH1('Rapporter');
+    await assertTitle('Rapporter');
+    await assertUrl('/reports');
+
+    // Click report for week 1
+    await clickLink('Rapport vecka 1');
+    await wait(500);
+    await assertH1('Rapport vecka 1');
+    await assertTitle('Rapport vecka 1');
+    await assertUrl('/reports/week/1');
   });
 });

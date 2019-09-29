@@ -17,7 +17,7 @@ export default {
   components: { AppTextfield, AppTextarea },
 
   data: () => ({
-    id: '',
+    id: undefined,
     content: '',
   }),
 

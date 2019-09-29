@@ -35,7 +35,7 @@ export default {
   components: { AppTextarea },
 
   data: () => ({
-    id: '',
+    id: undefined,
     content: '',
   }),
 

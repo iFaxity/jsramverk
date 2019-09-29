@@ -116,7 +116,7 @@ export default {
     prop: 'value',
   },
   props: {
-    value: String,
+    value: [String, Number],
     label: String,
     type: String,
   },
@@ -141,7 +141,11 @@ export default {
         return this.value;
       },
       set(value) {
-        this.$emit('input', value);
+        if (this.type == 'number') {
+          this.$emit('input', +value);
+        } else {
+          this.$emit('input', value);
+        }
       },
     }
   },

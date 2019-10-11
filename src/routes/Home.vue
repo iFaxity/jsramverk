@@ -1,5 +1,5 @@
 <template lang="pug">
-article.home-view
+article
   h1 Välkomstmeddelande
   img(src="/img/me.jpg", alt="En bild på mig")
 

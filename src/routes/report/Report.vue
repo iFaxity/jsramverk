@@ -1,5 +1,5 @@
 <template lang="pug">
-article.week-one
+article
   button.solid(v-if="loggedIn", @click="edit") Redigera
   h1(v-if="id") Rapport vecka {{ id }}
   .content(v-if="content", v-html="content")

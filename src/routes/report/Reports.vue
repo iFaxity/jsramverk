@@ -1,5 +1,5 @@
 <template lang="pug">
-article.week-one
+article
   button.solid(v-if="loggedIn", @click="create") Skapa rapport
   h1 Rapporter
   ul

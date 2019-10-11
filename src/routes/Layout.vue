@@ -4,6 +4,7 @@
     nav.left
       router-link(:to="{name: 'home'}") Hem
       router-link(:to="{name: 'reports'}") Rapporter
+      router-link(:to="{name: 'chat'}") Chatt
 
     nav.right(v-if="loggedIn")
       router-link(:to="{name: 'logout'}") Logout
@@ -29,18 +30,24 @@
   header {
     position: sticky;
     top: 0;
+    flex: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    flex-direction: row;
     padding: 0.5em 1em;
     background: #397eff;
     color: #fff;
     box-shadow: 0 0 0.5em 0.1em rgba(0, 0, 0, 0.5);
-    flex: 0;
 
     nav {
+      flex: 0 auto;
+
       &.left {
-        float: left;
+        align-self: flex-start;
       }
       &.right {
-        float: right;
+        align-self: flex-end;
       }
 
       a {

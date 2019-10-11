@@ -2,6 +2,7 @@
 const Home = () => import('./Home.vue');
 const Login = () => import('./auth/Login.vue');
 const Register = () => import('./auth/Register.vue');
+const Chat = () => import('./Chat.vue');
 const Report = () => import('./report/Report.vue');
 const Reports = () => import('./report/Reports.vue');
 const EditReport = () => import('./report/EditReport.vue');
@@ -45,6 +46,14 @@ export default [
     meta: {
       title: 'Registrera',
     },
+  },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: Chat,
+    meta: {
+      title: 'Chatt',
+    }
   },
   {
     path: '/reports',

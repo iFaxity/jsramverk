@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { request, parseToken } from '../lib/api';
 
-const ROOT = 'https://me-api.faxity.se';
+const API_URL = process.env.API_URL;
 
 Vue.use(Vuex);
 
@@ -34,7 +34,7 @@ export default new Vuex.Store({
         };
       }
 
-      const body = await request(ROOT, opts);
+      const body = await request(API_URL, opts);
 
       // Renew token if needed
       if (body && body.token) {

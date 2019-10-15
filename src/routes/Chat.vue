@@ -2,25 +2,32 @@
 article
   h1 Chatt
 
-  .login(v-if="!connected")
-    form(@submit.prevent="join")
-      app-textfield(v-model="user", label="Användarnamn", maxlength="15", required)
-      button.solid Skicka
-      p(v-if="connectError") {{ connectError }}
+  template(v-if="!connected")
+    .login
+      form(@submit.prevent="join")
+        app-textfield(v-model="alias", label="Användarnamn", maxlength="15", required)
+        button.solid Skicka
+        p(v-if="connectError") {{ connectError }}
 
-  .chat(v-else)
-    span.status(:class="disconnected ? 'disconnected' : 'connected'") {{ disconnected ? 'Frånkopplad' : 'Ansluten' }}
-    ul.messages(ref="chat")
-      template(v-for="m in messages")
-        li.message(v-if="m.type == 'message'", :key="m.key", :class="{ me: m.user == user }")
-          .header
-            span.user(v-if="m.user != user") {{ m.user }}
-            span.timestamp {{ m.timestamp }}
-          | {{ m.message }}
-        li.notice(v-else, :key="m.key") {{ m.message }}
+  template(v-else)
+    span Dubbelklicka på meddelanden för att spara dem
 
-    p.typing(v-if="typing.length") {{ usersTyping }}
-    textarea(:value="message", @keydown="keyDown", @keyup="keyUp", rows="2", placeholder="Message")
+    .chat
+      span.status(:class="disconnected ? 'disconnected' : 'connected'") {{ disconnected ? 'Frånkopplad' : 'Ansluten' }}
+      ul.messages(ref="chat")
+        template(v-for="m in messages")
+          li.message(
+            v-if="m.type == 'message'", :key="m.id", @dblclick="saveMessage(m)",
+            :class="{ me: m.sender == alias, saved: m.saved }"
+          )
+            .header
+              span.user(v-if="m.sender != alias") {{ m.sender }}
+              span.timestamp {{ m.timestamp }}
+            | {{ m.text }}
+          li.notice(v-else, :key="m.id") {{ m.text }}
+
+      p.typing(v-if="typing.length") {{ usersTyping }} is typing.
+      textarea(:value="message", rows="2", placeholder="Message", @keydown="keyDown", @keyup="keyUp")
 </template>
 
 <style lang="scss" scoped>
@@ -31,6 +38,7 @@ article
   overflow: hidden;
   background: #fff;
   padding-top: 1.5em;
+  margin-top: 1em;
 
   ul {
     list-style: none;
@@ -98,6 +106,10 @@ article
         background: #397eff;
       }
 
+      &.saved {
+        background: #4caf50;
+      }
+
       .user {
         position: absolute;
         top: 0.5em;
@@ -134,30 +146,35 @@ article
 <script>
 import io from 'socket.io-client';
 import AppTextfield from '~/components/Textfield.vue';
+import AppCheckbox from '~/components/Checkbox.vue';
 
-const MESSAGES_MAX_STACK = 500;
-const CHAT_URL = process.env.CHAT_URL;
+const API_URL = process.env.API_URL;
 
 export default {
   name: 'Chat',
-  components: { AppTextfield },
+  components: { AppTextfield, AppCheckbox },
 
   data: () => ({
+    alias: '',
+    connectError: '',
     messages: [],
     typing: [],
-    user: '',
+    message: '',
     connected: false,
     disconnected: false,
-    key: 1,
-    connectError: '',
-    message: '',
+    loadingMessages: false,
     stickyChat: true,
   }),
   computed: {
     usersTyping() {
       if (this.typing.length) {
-        const users = this.typing.slice(0, 5).join(', ');
-        return `${users} is typing`;
+        let res = this.typing.slice(0, 3).join(', ');
+
+        if (this.typing.length < users.length) {
+          res += `, ...and ${this.typing.length - users.length} more`;
+        }
+
+        return res;
       }
     },
   },
@@ -181,7 +198,7 @@ export default {
       }
     }
   },
-  destroyed() {
+  beforeDestroy() {
     if (this.connected) {
       this.socket.disconnect();
     }
@@ -189,7 +206,7 @@ export default {
 
   methods: {
     keyUp(e) {
-      if (!e.shiftKey && e.key == 'Enter') {
+      if (e.key == 'Enter') {
         if (this.message) {
           this.socket.emit('message', this.message);
           this.message = '';
@@ -202,61 +219,78 @@ export default {
     },
 
     join() {
-      if (!this.user) return;
+      if (!this.alias) return;
 
-      const query = { user: this.user };
-      const socket = io(CHAT_URL, { query });
+      const socket = io(API_URL, { query: { alias: this.alias } });
 
       socket.on('error', ex => {
         this.socket = null;
         this.connectError = ex;
       });
+      socket.on('disconnect', () => {
+        this.disconnected = true;
+      });
+      socket.on('reconnect', () => {
+        this.disconnected = false;
+        this.typing = [];
+      });
 
       socket.once('connect', () => {
         this.connected = true;
         this.disconnected = false;
+        this.socket.emit('load_messages');
 
-        socket.on('message', ({ user, timestamp, message }) => {
-          this.addMessage({
-            user, message,
-            timestamp: this.parseTimestamp(timestamp),
-          });
-        });
         socket.on('typing', this.userTyping);
         socket.on('typing_stop', this.userStopTyping);
         socket.on('join', this.userJoin);
         socket.on('leave', this.userLeave);
+        socket.on('message', ({ id, sender, text, timestamp }) => {
+          timestamp = this.parseTimestamp(timestamp);
 
-        // If server disconnects notify user
-        socket.on('disconnect', () => {
-          this.disconnected = true;
+          this.addMessage({ id, sender, text, timestamp, saved: false });
         });
+        socket.on('saved_message', messageId => {
+          const index = this.messages.findIndex(m => m.id == messageId);
 
-        // Server reconnect, notify user
-        socket.on('reconnect', () => {
-          this.disconnected = false;
-          this.typing = [];
+          if (index == -1) {
+            console.error('Message not saved, it wasn\'t found');
+          } else {
+            const message = this.messages[index];
+            message.saved = true;
+
+            this.$set(this.messages, `${index}`, message);
+          }
         });
+        socket.on('loaded_messages', messages => {
+          const loaded = messages.filter(m => !this.messages.find(x => m.id == x.id));
+
+          loaded.forEach(m => {
+            m.timestamp = this.parseTimestamp(m.timestamp);
+            m.saved = true;
+            m.type = 'message';
+          });
+          this.messages = [ ...loaded, ...this.messages ];
+        })
       });
 
       this.socket = socket;
     },
 
-    userJoin(user) {
+    userJoin(alias) {
       this.userStopTyping();
-      this.addMessage({ message: `${user} gick med i chatten.` }, 'notice');
+      this.addMessage({ message: `${alias} gick med i chatten.` }, 'notice');
     },
-    userLeave(user) {
-      this.userStopTyping(user);
-      this.addMessage({ message: `${user} lämnade chatten.` }, 'notice');
+    userLeave(alias) {
+      this.userStopTyping(alias);
+      this.addMessage({ message: `${alias} lämnade chatten.` }, 'notice');
     },
-    userTyping(user) {
-      if (!this.typing.includes(user)) {
-        this.typing.push(user);
+    userTyping(alias) {
+      if (!this.typing.includes(alias)) {
+        this.typing.push(alias);
       }
     },
-    userStopTyping(user) {
-      const index = this.typing.indexOf(user);
+    userStopTyping(alias) {
+      const index = this.typing.indexOf(alias);
 
       if (index != -1) {
         this.typing.splice(index, 1);
@@ -264,13 +298,13 @@ export default {
     },
 
     addMessage(message, type='message') {
-      if (this.messages.length == MESSAGES_MAX_STACK) {
-        this.messages.shift();
-      }
-
-      message.key = this.key++;
       message.type = type;
       this.messages.push(message);
+    },
+    saveMessage(message) {
+      if (message.saved) return;
+
+      this.socket.emit('save_message', message.id);
     },
 
     // Timestamp parsing

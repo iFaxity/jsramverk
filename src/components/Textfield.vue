@@ -99,14 +99,7 @@ input {
 </style>
 
 <script>
-function uuid(prefix = '_uuid_') {
-  let id;
-  do {
-    id = `${prefix}${Math.random().toString(36).substr(2)}`;
-  } while (document.getElementById(id) != null);
-
-  return id;
-}
+import uuid from '~/lib/uuid';
 
 export default {
   name: 'AppTextfield',

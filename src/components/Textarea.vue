@@ -91,71 +91,10 @@ label {
 ::-webkit-scrollbar-thumb:active {
   background-color: #b70000;
 }
-
-/*.textarea {
-  position: relative;
-  min-width: 100px;
-  margin: 0.3em 0;
-  width: 100%;
-  color: #405863;
-  height: 3.25em;
-}
-
-label {
-  position: absolute;
-  top: 1em;
-  left: 1em;
-  opacity: 0.5;
-  transition: transform 0.2s ease, opacity 0.2s ease, color 0.2s ease;
-  will-change: transform, opacity, color;
-  transform-origin: top left;
-  pointer-events: none;
-  user-select: none;
-}
-
-textarea {
-  background: #e6e6e6;
-  font-size: 1em;
-  padding: 1.5em 1em 0.5em;
-  width: 100%;
-  transition: border-color 0.2s ease, opacity 0.2s ease;
-  border: none;
-  border-bottom: 0.1em solid #8ea3ac;
-  border-radius: 0.2em;
-  outline: none;
-  box-sizing: border-box;
-  opacity: 0.5;
-
-  &:hover {
-    opacity: 0.8;
-  }
-  &:focus {
-    border-color: #397eff;
-    opacity: 1;
-  }
-  &:focus + label,
-  &:not(:placeholder-shown) + label {
-    color: #397eff;
-    transform: translateY(-60%) scale(0.9);
-    opacity: 1;
-  }
-
-  // Add required sign to label
-  &:required + label::after {
-    content: '*';
-  }
-}*/
 </style>
 
 <script>
-function uuid(prefix = '_uuid_') {
-  let id;
-  do {
-    id = `${prefix}${Math.random().toString(36).substr(2)}`;
-  } while (document.getElementById(id) != null);
-
-  return id;
-}
+import uuid from '~/lib/uuid';
 
 export default {
   name: 'AppTextarea',

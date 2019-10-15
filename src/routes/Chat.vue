@@ -146,13 +146,12 @@ article
 <script>
 import io from 'socket.io-client';
 import AppTextfield from '~/components/Textfield.vue';
-import AppCheckbox from '~/components/Checkbox.vue';
 
 const API_URL = process.env.API_URL;
 
 export default {
   name: 'Chat',
-  components: { AppTextfield, AppCheckbox },
+  components: { AppTextfield },
 
   data: () => ({
     alias: '',

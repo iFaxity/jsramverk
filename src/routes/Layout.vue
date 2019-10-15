@@ -91,8 +91,6 @@
 </style>
 
 <script>
-import AppDropdown from '../components/Dropdown.vue';
-
 export default {
   name: 'Layout',
   data: () => ({

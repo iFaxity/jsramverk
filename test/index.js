@@ -49,7 +49,8 @@ test.describe('Page', () => {
   test.afterEach(() => browser.quit());
 
   // Test cases
-  test.it('Test go to register page', async () => {
+  test.it('Test go to register page', async function () {
+    this.timeout(10000);
     await clickLink('Registrera');
     await wait(500);
     await assertH1('Registrera konto');
@@ -57,7 +58,8 @@ test.describe('Page', () => {
     await assertUrl('/register');
   });
 
-  test.it('Test go to login page', async () => {
+  test.it('Test go to login page', async function () {
+    this.timeout(10000);
     await clickLink('Login');
     await wait(500);
     await assertH1('Login');
@@ -65,7 +67,8 @@ test.describe('Page', () => {
     await assertUrl('/login');
   });
 
-  test.it('Test go to first report', async () => {
+  test.it('Test go to first report', async function () {
+    this.timeout(10000);
     await clickLink('Rapporter');
     await assertH1('Rapporter');
     await assertTitle('Rapporter');

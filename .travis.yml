@@ -9,6 +9,7 @@ cache:
 env:
   global:
     - NODE_ENV='test'
+    - API_URL='https://me-api.faxity.se'
 
 before_install:
   - yarn global add forever

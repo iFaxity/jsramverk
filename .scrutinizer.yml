@@ -4,6 +4,7 @@ build:
     selenium: true
     variables:
       NODE_ENV: 'test'
+      API_URL: 'https://me-api.faxity.se'
 
   tests:
     before:
